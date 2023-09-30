@@ -79,12 +79,21 @@ class GameEngine:
     def quit(self):
         print('See you later!')
         exit()
+    def victory(self):
+        print('\
+                You are victoriuos!\n\
+                You have defeated all the monsters and secured an invaluable trasure!\n\
+                Come back if you wish to join new adventure!\n')
+        self.quit()
 
     def gameloop(self, player: Player, enemies: List[Monster]):
         if player.alive == False:
-            print('You suffer a defeat! Luck was not on your side this time\nCome back again\n')
+            print('\
+                    You suffer a defeat! Luck was not on your side this time\n\
+                    Come back again\n')
             self.quit()
         alive_enemies = dict()
+        alive_enemies.clear()
         for enemy in range(len(enemies)):
             if enemies[enemy].alive:
                 alive_enemies[str(enemy+1)] = enemies[enemy]
@@ -93,7 +102,7 @@ class GameEngine:
             player.get_info() 
             print('\n\n') 
             for enemy in range(len(enemies)):
-                print(f'Gnargl {enemy}')
+                print(f'Gnargl {enemy+1}')
                 enemies[enemy].get_info()
                 print('\n\n') 
             self.info = False
@@ -114,11 +123,17 @@ class GameEngine:
                 else:
                     try:
                         player.attack_action(alive_enemies[target])
-                        print(f'Gnargl {target} has {alive_enemies[target].current_health} health left')
                         loop = True
                         turn_state = True
+                        if alive_enemies[target].alive == False:
+                            alive_enemies.pop(target)
+                            print(f'Gnargl {target} has fallen!')
+                        else:
+                            print(f'Gnargl {target} has {alive_enemies[target].current_health} health left')
+                        print('')
                     except:
                         print('Choose valid target, or type [C] to cancel')
+                        print('')
         elif x in ['D','d']:
             turn_state = player.heal()
             if turn_state :
@@ -136,14 +151,19 @@ class GameEngine:
                 pass
         else:
             print('Unrecognised Command!')
-            
+            x = ''
+
+        if len(alive_enemies) == 0:
+            self.victory()
+
         if turn_state == True:
-            print('\nEnemies mke their move!\n') 
+            print('\nEnemies make their move!\n') 
             for enemy in alive_enemies.values():
                 enemy.attack_action(player)
             turn_state = False
             print(f'You have {player.current_health} health left') 
-        self.turn +=1
+        if x != '':
+            self.turn +=1
         print('\n')
 
 
@@ -159,10 +179,10 @@ if __name__ == '__main__':
         else:
             print("I didn't get that, please repeat") 
             x = ''
-    player1 = Player(max_health = 10, attack= 20, defence = 0)
-    gnargl1 = Monster(max_health = 30, attack= 10, defence = 0)
-    gnargl2 = Monster(max_health = 30, attack= 10, defence = 0)
-    gnargl3 = Monster(max_health = 30, attack= 10, defence = 0)
+    player1 = Player(max_health = 30, attack= 20, defence = 5)
+    gnargl1 = Monster(max_health = 20, attack= 12, defence = 0)
+    gnargl2 = Monster(max_health = 20, attack= 12, defence = 0)
+    gnargl3 = Monster(max_health = 20, attack= 12, defence = 0)
     
     enemies = [gnargl1, gnargl2, gnargl3]
 
